@@ -20,7 +20,7 @@ extern __sighandler_t signal(int __sig, __sighandler_t __handler);
 /* handle built ins */
 int checker(char **cmd, char *buf);
 void entry(void);
-void handle_signal(int m);
+void handle_signal(int i);
 char **tokenizer(char *line);
 char *test_path(char **path, char *command);
 char *append_path(char *path, char *arg);
@@ -28,11 +28,6 @@ int handle_builtin(char **command, char *line);
 void exit_cmd(char **ctok, char *l);
 
 void print_env(void);
-
-/* a new environment variable, or modify & Remove an environment variable */
-char **get_environ(ino_t *info);
-int _unsetenv(ino_t *info, char *var);
-int _setenv(ino_t *info, char *var, char *value);
 
 /* string handlers */
 int _strcmp(char *s1, char *s2);
