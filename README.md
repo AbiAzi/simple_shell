@@ -1,50 +1,53 @@
-# 0x16. C - Simple Shell
+Task 0  
 
-This project is an implementation of the shell created as the final project for the C code sprint at **ALX Africa**.
+Write a beautiful code that passes the Betty checks
 
-## Table of contents :clipboard:
+Task 1
 
- - [Description]
- - [Installation]
- - [Usage]
- - [Example]
- - [Contributors]
- - [Acknowledgements]
-## Description :e-mail:
-This is a shell written in [C](https://en.wikipedia.org/wiki/C_(programming_language)).
-It is based on [the Thompson Shell](https://en.wikipedia.org/wiki/Thompson_shell).
+Write a UNIX command line interpreter.
 
-## Installation :wrench:
-Clone the below repository and compile the files into an executable using the GCC compiler.
-```
-https://github.com/Fraol123/simple_shell.git.
-```
-##Environment :evergreen_tree::evergreen_tree:
+* Usage: simple_shell
+Your Shell should:
 
-Our shell was built and tested on  Ubuntu 14.04 LTS.
+* Display a prompt and wait for the user to type a command. A command line always ends with a new line.
+* The prompt is displayed again each time a command has been executed.
+* The command lines are simple, no semicolons, no pipes, no redirections or any other advanced features.
+* The command lines are made only of one word. No arguments will be passed to programs.
+* If an executable cannot be found, print an error message and display the prompt again.
+* Handle errors.
+* You have to handle the “end of file” condition (Ctrl+D)
+You don’t have to:
 
-### Basic usage :bulb:
-- First, [fork this repository](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo).
-- Then [clone it to your local machine](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository).
-- Create an executable by running the following command:
-- `gcc -Wall -Werror -Wextra -pedantic *.c -o hsh`
-- From there, type in the following command and press your enter button.
-- `./hsh`
-- Final step: ENJOY!
+* use the PATH
+* implement built-ins
+* handle special characters : ", ', `, \, *, &, #  
+* be able to move the cursor
+* handle commands with arguments
+execve will be the core part of your Shell, don’t forget to pass the environ to it…
 
-## Example :computer:
-```
-ls -la
-```
-![screenshot of shell](https://user-images.githubusercontent.com/30075600/114757753-e50c2180-9d64-11eb-95ea-fb9bba776c8c.png)
+Task 2
 
-## Contributors :sunglasses::muscle:
-* [**Fraol Tolera**](https://github.com/Fraol123)
-* [**Andrew Mukare**](https://github.com/JudgeFudge19)
-* [**Ermias Teshome**](https://github.com/ermiast)
+Simple shell 0.1 +
 
-## Acknowledgments :pray:
-- Our fellow cohort members.
-- The creators of the C language.
-- Our software engineer-in-residence.
-- Betty Holberton.
+* Handle command lines with arguments
+
+Task 3
+
+Simple shell 0.2 +
+
+* Handle the PATH
+* fork must not be called if the command doesn’t exist
+
+Task 4
+
+Simple shell 0.3 +
+
+* Implement the exit built-in, that exits the shell
+* Usage: exit
+* You don’t have to handle any argument to the built-in exit
+
+Task 5
+
+Simple shell 0.4 +
+
+* Implement the env built-in, that prints the current environment
