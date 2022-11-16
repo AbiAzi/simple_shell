@@ -7,6 +7,7 @@
  * Return: If an error occurs or the command cannot be located - NULL.
  *         Otherwise - the full pathname of the command.
  */
+char *fill_path_dir(char *path);
 char *get_location(char *command)
 {
 	char **path, *i;
