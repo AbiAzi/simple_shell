@@ -7,6 +7,7 @@
  *
  * Return: A function pointer to the corresponding builtin.
  */
+int shcd(char **args, char __attribute__((__unused__)) **front);
 int (*get_builtin(char *command))(char **args, char **front)
 {
 	builtin_t funcs[] = {
