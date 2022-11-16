@@ -30,9 +30,9 @@ void exit_cmd(char **ctok, char *l);
 void print_env(void);
 
 /* a new environment variable, or modify & Remove an environment variable */
-char **get_environ(info_t *info);
-int _unsetenv(info_t *info, char *var);
-int _setenv(info_t *info, char *var, char *value);
+char **get_environ(info_t *ino);
+int _unsetenv(info_t *ino, char *var);
+int _setenv(info_t *ino, char *var, char *value);
 
 /* string handlers */
 int _strcmp(char *s1, char *s2);
