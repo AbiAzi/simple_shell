@@ -3,6 +3,8 @@
  * sig_handler - Prints a new prompt upon a signal.
  * @sig: The signal.
  */
+int execute(char **args, char **front);
+int main(int argc, char *argv[]);
 void sig_handler(int sig)
 {
 	char *new_prompt = "\n$ ";
