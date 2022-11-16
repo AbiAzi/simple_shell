@@ -5,6 +5,7 @@
  * @args: A null-terminated double pointer containing commands/arguments.
  * @front: A double pointer to the beginning of args.
  */
+void variable_replacement(char **line, int *exe_ret);
 void free_args(char **args, char **front)
 {
 	size_t i;
