@@ -8,6 +8,8 @@
  * Return: If an error occurs - NULL.
  *         Otherwise - a pointer to the stored command.
  */
+int call_args(char **args, char **front, int *exe_ret);
+int handle_args(int *exe_ret);
 char *get_args(char *line, int *exe_ret)
 {
 	size_t n = 0;
