@@ -1,93 +1,132 @@
 #include "shell.h"
+/**
+ * sig_handler - Prints a new prompt upon a signal.
+ * @sig: The signal.
+ */
+int execute(char **args, char **front);
+int main(int argc, char *argv[]);
+void sig_handler(int sig)
+{
+	char *new_prompt = "\n$ ";
+
+	(void)sig;
+	signal(SIGINT, sig_handler);
+	write(STDIN_FILENO, new_prompt, 3);
+}
 
 /**
-* _path - finds the path from the global enviroment
-* Return: The path if it is found ,NULL if not.
-*/
-char *_path(void)
+ * execute - Executes a command in a child process.
+ * @args: An array of arguments.
+ * @front: A double pointer to the beginning of args.
+ *
+ * Return: If an error occurs - a corresponding error code.
+ *         O/w - The exit value of the last executed command.
+ */
+int execute(char **args, char **front)
 {
-	int i;
-	char **env = environ, *path = NULL;
+	pid_t child_pid;
+	int status, flag = 0, ret = 0;
+	char *command = args[0];
 
-	while (*env != NULL)
+	if (command[0] != '/' && command[0] != '.')
 	{
-		if (_strncmp(*env, "PATH=", 5) == 0)
-		{
-			path = *env;
-			while (*path && i < 5)
-			{
-				path++;
-				i++;
-			}
-			return (path);
-		}
-		env++;
+		flag = 1;
+		command = get_location(command);
 	}
-	return (NULL);
+
+	if (!command || (access(command, F_OK) == -1))
+	{
+		if (errno == EACCES)
+			ret = (create_error(args, 126));
+		else
+			ret = (create_error(args, 127));
+	}
+	else
+	{
+		child_pid = fork();
+		if (child_pid == -1)
+		{
+			if (flag)
+				free(command);
+			perror("Error child:");
+			return (1);
+		}
+		if (child_pid == 0)
+		{
+			execve(command, args, environ);
+			if (errno == EACCES)
+				ret = (create_error(args, 126));
+			free_env();
+			free_args(args, front);
+			free_alias_list(aliases);
+			_exit(ret);
+		}
+		else
+		{
+			wait(&status);
+			ret = WEXITSTATUS(status);
+		}
+	}
+	if (flag)
+		free(command);
+	return (ret);
 }
 
 /**
-* entry - prints $ to let user know the program is
-* ready to take their input
-* prints the prompt if the shell is in interactive mode
-* Return: no return
-*/
-void entry(void)
+ * main - Runs a simple UNIX command interpreter.
+ * @argc: The number of arguments supplied to the program.
+ * @argv: An array of pointers to the arguments.
+ *
+ * Return: The return value of the last executed command.
+ */
+int main(int argc, char *argv[])
 {
-	if ((isatty(STDIN_FILENO) == 1) && (isatty(STDOUT_FILENO) == 1))
-		flags.interactive = 1;
-	if (flags.interactive)
-		write(STDERR_FILENO, "# ", 2);
-}
-/**
-* main - read, execute then print output loop
-* @argc: argument count
-* @argv: argument vector
-* @envp: environment vector
-*
-* Return: 0
-*/
+	int ret = 0, retn;
+	int *exe_ret = &retn;
+	char *prompt = "$ ", *new_line = "\n";
 
-int main(int argc, char **argv, char *envp[])
-{
-	char *buf = NULL;
-	char *arph = NULL;
-	char *dir = NULL;
-	size_t n = 0;
-	ssize_t l = 0;
-	char **argu = NULL, **paths = NULL;
-	(void)envp, (void)argv;
+	name = argv[0];
+	hist = 1;
+	aliases = NULL;
+	signal(SIGINT, sig_handler);
 
-	if (argc < 1)
-		return (-1);
-	signal(SIGINT, handle_signal);
+	*exe_ret = 0;
+	environ = _copyenv();
+	if (!environ)
+		exit(-100);
+
+	if (argc != 1)
+	{
+		ret = proc_file_commands(argv[1], exe_ret);
+		free_env();
+		free_alias_list(aliases);
+		return (*exe_ret);
+	}
+
+	if (!isatty(STDIN_FILENO))
+	{
+		while (ret != END_OF_FILE && ret != EXIT)
+			ret = handle_args(exe_ret);
+		free_env();
+		free_alias_list(aliases);
+		return (*exe_ret);
+	}
+
 	while (1)
 	{
-		free_buffers(argu);
-		free_buffers(paths);
-		free(arph);
-		entry();
-		l = getline(&buf, &n, stdin);
-		if (l < 0)
-			break;
-		info.ln_count++;
-		if (buf[l - 1] == '\n')
-			buf[l - 1] = '\0';
-		argu = tokenizer(buf);
-		if (argu == NULL || *argu == NULL || **argu == '\0')
-			continue;
-		if (checker(argu, buf))
-			continue;
-		dir = _path();
-		paths = tokenizer(dir);
-		arph = test_path(paths, argu[0]);
-		if (!arph)
-			perror(argv[0]);
-		else
-			exe(arph, argu);
+		write(STDOUT_FILENO, prompt, 2);
+		ret = handle_args(exe_ret);
+		if (ret == END_OF_FILE || ret == EXIT)
+		{
+			if (ret == END_OF_FILE)
+				write(STDOUT_FILENO, new_line, 1);
+			free_env();
+			free_alias_list(aliases);
+			exit(*exe_ret);
+		}
 	}
-	if (l < 0 && flags.interactive)
-		write(STDERR_FILENO, "\n", 1);
-	free(buf);
-	return (0);
+
+	free_env();
+	free_alias_list(aliases);
+	return (*exe_ret);
 }
